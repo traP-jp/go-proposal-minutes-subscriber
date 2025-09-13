@@ -1,0 +1,43 @@
+name: Subscribe Go Proposal Minutes
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Daily at 09:00 JST
+  workflow_dispatch:
+
+jobs:
+  subscribe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get new comment
+        id: get_new_comment
+        run: |
+          YESTERDAY=$(date -u --date="yesterday" +%Y-%m-%d)
+          COMMENT=$(gh issue view 33502 \
+            -R golang/go \
+            --json "comments" \
+            --jq ".comments[-1] | select(.createdAt > \"$YESTERDAY\") | .body")
+          if [ -n "$COMMENT" ]; then
+            echo "comment_found=1" >> "$GITHUB_OUTPUT"
+            {
+              echo "comment<<EOF"
+              echo "$COMMENT"
+              echo ""
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
+          fi
+      # NOTE: You can customize this for your own subscribers!
+      - name: Send notification
+        if: steps.get_new_comment.outputs.comment_found == "1"
+        env:
+          MESSAGE: ${{ steps.get_new_comment.outputs.comment }}
+          WEBHOOK_URL: https://q.trap.jp/api/v3/webhooks/${{ secrets.WEBHOOK_ID }}
+          WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
+        run: |
+          SIGNATURE=$(echo -n "$MESSAGE" | openssl sha1 -hmac $WEBHOOK_SECRET)
+          curl \
+            -X POST \
+            -H "Content-Type: text/plain; charset=utf-8" \
+            -H "X-TRAQ-Signature: $SIGNATURE" \
+            -d "$MESSAGE" \
+            $WEBHOOK_URL
