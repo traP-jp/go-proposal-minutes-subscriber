@@ -36,7 +36,9 @@ jobs:
           WEBHOOK_URL: https://q.trap.jp/api/v3/webhooks/${{ secrets.WEBHOOK_ID }}
           WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
         run: |
-          SIGNATURE=$(echo -n "$MESSAGE" | openssl sha1 -hmac $WEBHOOK_SECRET)
+          SIGNATURE=$(echo -n "$MESSAGE" \
+            | openssl sha1 -hmac $WEBHOOK_SECRET \
+            | awk '{ print $2 }')
           curl \
             -X POST \
             -H "Content-Type: text/plain; charset=utf-8" \
