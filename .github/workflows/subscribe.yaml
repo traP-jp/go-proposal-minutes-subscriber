@@ -28,7 +28,7 @@ jobs:
           fi
       # NOTE: You can customize this for your own subscribers!
       - name: Send notification
-        if: steps.get_new_comment.outputs.comment_found == "1"
+        if: steps.get_new_comment.outputs.comment_found == '1'
         env:
           MESSAGE: ${{ steps.get_new_comment.outputs.comment }}
           WEBHOOK_URL: https://q.trap.jp/api/v3/webhooks/${{ secrets.WEBHOOK_ID }}
