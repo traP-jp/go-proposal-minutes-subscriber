@@ -32,7 +32,9 @@ jobs:
       - name: Send notification
         if: steps.get_new_comment.outputs.comment_found == '1'
         env:
-          MESSAGE: ${{ steps.get_new_comment.outputs.comment }}
+          MESSAGE: |
+            ## [Go Proposal Minutes Status](https://go.dev/s/proposal-minutes)
+            ${{ steps.get_new_comment.outputs.comment }}
           WEBHOOK_URL: https://q.trap.jp/api/v3/webhooks/${{ secrets.WEBHOOK_ID }}
           WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
         run: |
