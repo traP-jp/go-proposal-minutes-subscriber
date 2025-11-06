@@ -2,12 +2,20 @@ name: Subscribe Go Proposal Minutes
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Daily at 09:00 JST
+    - cron: "0 0 * * *" # Daily at 09:00 JST
   workflow_dispatch:
 
 jobs:
   subscribe:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        issue:
+          - title: Go Proposal Minutes
+            number: 33502
+          - title: Go Language Change Proposal Minutes
+            number: 33892
     steps:
       - name: Get new comment
         id: get_new_comment
@@ -15,7 +23,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           YESTERDAY=$(date -u --date="yesterday" +%Y-%m-%d)
-          COMMENT=$(gh issue view 33502 \
+          COMMENT=$(gh issue view ${{ matrix.issue.number }} \
             -R golang/go \
             --json "comments" \
             --jq ".comments[-1] | select(.createdAt > \"$YESTERDAY\") | .body")
@@ -33,7 +41,7 @@ jobs:
         if: steps.get_new_comment.outputs.comment_found == '1'
         env:
           MESSAGE: |
-            ## [Go Proposal Minutes Status](https://go.dev/s/proposal-minutes)
+            ## [${{ matrix.issue.number }}](https://github.com/golang/go/issues/${{ matrix.issue.number }})
             ${{ steps.get_new_comment.outputs.comment }}
           WEBHOOK_URL: https://q.trap.jp/api/v3/webhooks/${{ secrets.WEBHOOK_ID }}
           WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
