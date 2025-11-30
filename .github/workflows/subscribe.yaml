@@ -41,7 +41,7 @@ jobs:
         if: steps.get_new_comment.outputs.comment_found == '1'
         env:
           MESSAGE: |
-            ## [${{ matrix.issue.number }}](https://github.com/golang/go/issues/${{ matrix.issue.number }})
+            ## [${{ matrix.issue.title }}](https://github.com/golang/go/issues/${{ matrix.issue.number }})
             ${{ steps.get_new_comment.outputs.comment }}
           WEBHOOK_URL: https://q.trap.jp/api/v3/webhooks/${{ secrets.WEBHOOK_ID }}
           WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
