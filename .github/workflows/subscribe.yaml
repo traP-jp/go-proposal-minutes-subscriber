@@ -43,6 +43,8 @@ jobs:
           MESSAGE: |
             ## [${{ matrix.issue.title }}](https://github.com/golang/go/issues/${{ matrix.issue.number }})
             ${{ steps.get_new_comment.outputs.comment }}
+            ---
+            This feed is managed by [traP-jp/go-proposal-minutes-subscriber](//github.com/traP-jp/go-proposal-minutes-subscriber).
           WEBHOOK_URL: https://q.trap.jp/api/v3/webhooks/${{ secrets.WEBHOOK_ID }}
           WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
         run: |
