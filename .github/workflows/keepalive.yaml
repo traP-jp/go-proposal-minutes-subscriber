@@ -12,8 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-        with:
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       - run: |
           echo "keepalive $(date)" >> .github/keepalive.txt
           git config user.name "GitHub Actions"
