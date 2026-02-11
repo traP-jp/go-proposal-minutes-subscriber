@@ -1,0 +1,23 @@
+name: Keepalive Commit
+on:
+  schedule:
+    - cron: "0 0 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      - run: |
+          echo "keepalive $(date)" >> .github/keepalive.txt
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add .github/keepalive.txt
+          git commit -m "keepalive commit $(date)" || exit 0
+          git push origin HEAD
